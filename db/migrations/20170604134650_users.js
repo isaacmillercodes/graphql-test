@@ -1,6 +1,6 @@
 exports.up = knex => {
   return knex.schema.createTable('user', table => {
-    table.uuid('id');
+    table.increments();
     table.string('name');
     table.string('email');
   });
