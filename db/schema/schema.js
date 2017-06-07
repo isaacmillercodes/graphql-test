@@ -15,6 +15,14 @@ const UserType = new GraphQLObjectType({
     id: { type: GraphQLInt },
     name: { type: GraphQLString },
     email: { type: GraphQLString},
+    users: {
+      type: new GraphQLList(UserType),
+      resolve(parentValue, args) {
+        return knex.select('*').from('users').where('user_one', parentValue.id).orWhere('user_two', parentValue.id).join('user_connection', function() {
+          this.on('user_one', '=', 'users.id').orOn('user_two', '=', 'users.id');
+        });
+      }
+    }
     // company: {
     //   type: CompanyType,
     //   resolve(parentValue, args) {
