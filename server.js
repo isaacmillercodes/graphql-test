@@ -17,8 +17,8 @@ app.use('/test/:id', (req, res) => {
   //   res.send(resp);
   // });
 
-  knex('user_connection').innerJoin('users', function() {
-    this.on('user_connection.user_one', '=', 'users.id').orOn('user_connection.user_two', '=', 'users.id');
+  knex('user_connection').where('user_one', req.params.id).orWhere('user_two', req.params.id).innerJoin('users', function() {
+    this.onNotIn('users.id', req.params.id).on('user_connection.user_one', '=', 'users.id').orOn('user_connection.user_two', '=', 'users.id');
   }).then(resp => {
     res.send(resp);
   });

@@ -18,8 +18,12 @@ const UserType = new GraphQLObjectType({
     users: {
       type: new GraphQLList(UserType),
       resolve(parentValue, args) {
-        return knex.select('*').from('users').where('user_one', parentValue.id).orWhere('user_two', parentValue.id).join('user_connection', function() {
-          this.on('user_one', '=', 'users.id').orOn('user_two', '=', 'users.id');
+        return knex('user_connection').where('user_one', parentValue.id).orWhere('user_two', parentValue.id).innerJoin('users', function() {
+          this.on('user_connection.user_one', '=', 'users.id').orOn('user_connection.user_two', '=', 'users.id');
+        }).then(resp => {
+          return resp.filter(user => {
+            return user.id !== parentValue.id;
+          });
         });
       }
     }
